@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cờ Tư Lệnh</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <h1>CỜ TƯ LỆNH</h1>
+  </div>
+  <div class="tools">
+    <button class="b" id="bRules">Luật chơi</button>
+    <button class="b" id="bFlat">Xem phẳng</button>
+    <button class="b" id="bUndo">Đi lại</button>
+    <button class="b p" id="bNew">Ván mới</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="boardbox">
+    <div class="bar">
+      <div class="chip"><span class="dot RED" id="dot"></span><span id="turnTxt">Lượt: Đỏ</span></div>
+      <div class="warn" id="warn">TƯ LỆNH BỊ CHIẾU!</div>
+      <div class="chip" id="modeTxt">2 người · 1 máy</div>
+    </div>
+    <div class="scene"><div id="stage"><div id="terrain"></div></div></div>
+  </div>
+
+  <div class="side">
+    <div class="pnl">
+      <h2>Chế độ</h2>
+      <div class="col">
+        <button class="b on" id="mLocal"> 2 người cùng máy</button>
+        <button class="b" id="mAI"> Đấu với máy</button>
+      </div>
+      <div id="aiBox" style="display:none;margin-top:8px" class="col">
+        <select id="lvl"><option value="1">Dễ</option><option value="2" selected>Trung bình</option><option value="3">Khó</option></select>
+        <div style="display:flex;gap:6px">
+          <button class="b sm on" id="sRed" style="flex:1">Cầm Đỏ</button>
+          <button class="b sm" id="sBlue" style="flex:1">Cầm Xanh</button>
+        </div>
+      </div>
+    </div>
+    <div class="pnl">
+      <h2>Quân bị bắt</h2>
+      <div class="note" style="margin-bottom:3px">Đỏ mất:</div><div class="cap" id="lostR"></div>
+      <div class="note" style="margin:7px 0 3px">Xanh mất:</div><div class="cap" id="lostB"></div>
+    </div>
+    <div class="pnl"><h2>Biên bản</h2><div class="log" id="log"></div></div>
+    <div class="pnl"><h2>Ký hiệu</h2><div class="leg" id="leg"></div></div>
+    <div class="pnl">
+      <h2>Online &amp; đăng nhập</h2>
+      <div class="note">Đăng nhập Google và đấu online qua ID bạn bè sẽ được update sau.</div>
+    </div>
+  </div>
+</div></div>
+
+<div class="mb" id="rules"><div class="md">
+  <h3>Luật chơi</h3>
+  <h4>Bàn cờ</h4>
+  <p>11 đường dọc (cột 0–10) × 12 đường ngang (hàng 0–11). Quân đứng trên <b>giao điểm</b>. Dải <b>biển</b> nằm bên trái (cột 0–2). Dải <b>sông</b> cắt ngang giữa hàng 5 và hàng 6, có 2 chỗ <b>ngầm</b> ở cột 5 và cột 7.</p>
+  <h4>Đội hình mỗi bên (19 quân)</h4>
+  <p>1 Tư lệnh · 2 Sở chỉ huy · 2 Tàu chiến · 2 Không quân · 1 Tên lửa · 2 Pháo binh · 2 Cao xạ · 2 Xe tăng · 2 Bộ binh · 2 Công binh · 1 Dân quân.</p>
+  <h4>Cách đi từng quân</h4>
+  <ul id="ruleList"></ul>
+  <h4>Sông &amp; biển</h4>
+  <ul>
+    <li>Qua sông tự do tại <b>cột ngầm 5 và 7</b>. Ngoài hai cột đó là đoạn nước sâu: chỉ Tư lệnh, Bộ binh, Công binh, Dân quân, Xe tăng đi qua trực tiếp được. Cao xạ, Tên lửa, Pháo binh phải nhờ Công binh cõng mới qua được — trừ khi chính nước đi đó là <b>ăn quân đối phương ở bờ bên kia</b>, lúc này được phép vượt sông ở bất kỳ đoạn nào. Không quân bay qua mọi địa hình nên không bị luật này chi phối.</li>
+    <li>Chỉ Tàu chiến hoạt động trong lòng biển (cột 0–1), có thể tiến sâu vào sông tới đúng cột ngầm gần nhất (cột 5). Cột 2 là bờ, quân trên bộ và Tàu chiến đều đứng được ở đó.</li>
+  </ul>
+  <h4>Quy tắc riêng</h4>
+  <ul>
+    <li><b>Cõng quân</b>: Tư lệnh, Bộ binh, Dân quân bước vào ô quân bạn là Xe tăng / Tàu chiến / Không quân để được cõng. Công binh <b>chỉ</b> cõng được Cao xạ, Pháo binh, Tên lửa (khí tài nặng) — và đây cũng là cách duy nhất để chúng qua đoạn sông sâu ngoài chỗ ngầm. Lượt sau chọn: đi cả cụm theo luật quân cõng, hoặc cho quân ngồi trên tách ra đi riêng — game sẽ hỏi khi có nhiều lựa chọn cùng lúc.</li>
+    <li><b>Quân tổ hợp bị bắn hạ</b>: khi một ô đang cõng nhau bị đối phương ăn (dù thế chỗ hay bắn tại chỗ), cả hai quân trên đó đều bị tiêu diệt cùng lúc, điểm tính theo tổng.</li>
+    <li><b>Bắt buộc giải chiếu</b>: nếu Tư lệnh đang bị chiếu, lượt đi tiếp theo bắt buộc phải là nước giải toả tình trạng đó (đi Tư lệnh ra chỗ an toàn, chặn hoặc ăn quân đang chiếu); nước đi nào không giải quyết được sẽ không hiện ra để chọn. Hết nước giải chiếu đồng nghĩa thua ván.</li>
+    <li><b>Sở chỉ huy</b>: 2 quân mỗi bên, đứng ngay trước Tư lệnh, đứng yên tuyệt đối, không tự đi/ăn quân — chỉ là vật cản. Chỉ Công binh/Xe tăng/Pháo binh/Không quân phá được. Tư lệnh có thể bước vào ẩn náu trên đó bất cứ lúc nào rồi rời đi sau; nếu Sở chỉ huy đang chứa Tư lệnh mà bị phá thì Tư lệnh bị diệt.</li>
+    <li><b>Tàu sân bay</b>: Không quân có thể bay tới hạ cánh lên Tàu chiến của mình; khi đó tàu trở thành tàu sân bay chở máy bay, có thể cất cánh lại bất cứ lúc nào.</li>
+    <li><b>Bắn tại chỗ</b>: Bộ binh/Công binh/Cao xạ/Dân quân bắn tàu chiến cách 1 đoạn (2 nếu là anh hùng) mà không cần thế chỗ. Xe tăng bắn tàu chiến trong tầm 1–2 đoạn tại chỗ. Pháo binh bắn tàu chiến trong đúng tầm đi của nó (thẳng 1–2 đoạn, chéo 1 đoạn) tại chỗ; ăn quân trên bộ thì đi thẳng tới thế chỗ như quân thường. Tàu chiến tự di chuyển (và thế chỗ khi ăn) thẳng/ngang/chéo tối đa 4 đoạn, bị vật cản đầu tiên chặn lại; còn tên lửa hải đối hải (ăn tàu địch) và pháo hạm (bắn mục tiêu trên bộ, tầm 3) đều là hoả lực tầm xa, không bị vật cản giữa đường chặn — tên lửa chỉ bắt buộc thế chỗ khi đường biển đi thẳng tới đó còn trống, nếu không thì bắn tại chỗ; pháo hạm luôn bắn tại chỗ.</li>
+    <li><b>Vùng cấm bay</b>: Cao xạ phủ bán kính 1, Tên lửa phủ 2 ô theo trục và 1 ô chéo. Không quân bay vào vùng cấm mà ở đó có quân địch thì cả hai cùng bị tiêu diệt (1 đổi 1) — áp dụng cho bất kỳ quân nào nằm trong vùng đó, không riêng gì trận địa gây ra nó. Nếu ô trong vùng cấm đang trống thì coi như bị bắn rơi, không đi được. Không quân không bao giờ được hạ cánh xuống biển (chỉ bay qua).</li>
+    <li><b>Quân anh hùng</b> ★: quân nào chiếu được Tư lệnh đối phương sẽ được tăng 1 tầm đi/ăn (kể cả tầm bắn tại chỗ).</li>
+    <li>Hai Tư lệnh không được nhìn thẳng mặt nhau trên cùng một đường trống.</li>
+  </ul>
+  <div style="text-align:right;margin-top:14px"><button class="b p" id="bClose">Đóng</button></div>
+</div></div>
+
+<div class="over" id="over"><div class="c">
+  <h2 id="ovT"></h2><p id="ovP"></p>
+  <button class="b p" id="ovB">Ván mới</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
